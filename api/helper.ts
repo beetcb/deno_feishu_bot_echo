@@ -2,6 +2,7 @@ const API_ORIGIN = "https://open.feishu.cn/open-apis";
 
 export async function errorHandler(res: Response) {
   const body = await res.json();
+  console.log(body);
   if (body.code !== 0) {
     console.log("send message error, code = %d, msg = %s", body.code, body.msg);
     return "Error";
