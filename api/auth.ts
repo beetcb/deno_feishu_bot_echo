@@ -1,5 +1,3 @@
-import { send } from "../utils.ts";
-
 const APP_ID = Deno.env.get("APP_ID");
 const APP_SECRET = Deno.env.get("APP_SECRET");
 
@@ -17,10 +15,6 @@ export default async function getTenantAccessToken() {
       }),
     },
   );
-
-  if (!response.ok) {
-    return send();
-  }
 
   const body = await response.json();
 
