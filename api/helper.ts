@@ -4,8 +4,9 @@ export async function errorHandler(res: Response) {
   const body = await res.json();
   if (body.code !== 0) {
     console.log("send message error, code = %d, msg = %s", body.code, body.msg);
-    return "";
+    return "Error";
   }
+  return body.msg;
 }
 
 export function getWithAuthOptions(apiEndpointPath: string, token: string) {

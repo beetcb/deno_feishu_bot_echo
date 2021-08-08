@@ -17,5 +17,5 @@ export async function sendTextMessage(
     },
   );
 
-  errorHandler(response);
+  return await errorHandler(response);
 }

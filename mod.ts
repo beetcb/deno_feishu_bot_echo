@@ -1,6 +1,8 @@
 import { isMessageReceive, isVerification, send } from "./utils.ts";
 import { sendTextMessage } from "./api/message/sendMessage.ts";
 import getTenantAccessToken from "./api/auth.ts";
+import { addOneRecord } from "./api/bitable/addRecords.ts";
+import { tweeAddRecord } from "./needs_wrapper.ts";
 
 const APP_ID = Deno.env.get("APP_ID");
 const APP_SECRET = Deno.env.get("APP_SECRET");
@@ -65,7 +67,13 @@ async function handleRequest(request: Request) {
 
     await sendTextMessage(accessToken, {
       receiver: body.event.message.chat_id,
-      text,
+      text: await tweeAddRecord(accessToken, {
+        filds: {
+          推文任务描述: "test",
+          落实组别: "信息化办公室",
+          预计截止日期: new Date().getTime() + 1000 * 60 * 60 * 6,
+        },
+      }),
     });
     return send();
   }

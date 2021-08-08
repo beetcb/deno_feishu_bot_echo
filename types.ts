@@ -1,10 +1,6 @@
-export type WebhookEvent =
-  | ContactEvent
-  | IMEvent;
+export type WebhookEvent = ContactEvent | IMEvent;
 
-type ContactEvent =
-  | ContactUserUpdatedV3Event
-  | ContactUserDeletedV3Event;
+type ContactEvent = ContactUserUpdatedV3Event | ContactUserDeletedV3Event;
 
 type IMEvent = ImMessageReceiveV1Event;
 
@@ -106,3 +102,16 @@ export interface WebhookEventMap {
 }
 
 export type WebhookEventName = keyof WebhookEventMap;
+
+export interface RecordField {
+  [K: string]: any;
+}
+
+export type AttachedFileRecordField = Array<{
+  file_token: string;
+  name: string;
+  size: number;
+  tmp_url: string;
+  type: string;
+  url: string;
+}>;
