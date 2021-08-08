@@ -1,23 +1,17 @@
-import { send } from "../../utils.ts";
+import { send, postWithAuthOptions } from "../../utils.ts";
 export default async function sendMessage(
   token: string,
   receive_id: string,
-  text: string,
+  text: string
 ) {
-  const response = await fetch(
-    "https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id",
+  const response = await postWithAuthOptions(
+    "/im/v1/messages?receive_id_type=chat_id",
+    token,
     {
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        Authorization: "Bearer " + token,
-      },
-      method: "POST",
-      body: JSON.stringify({
-        receive_id,
-        msg_type: "text",
-        content: JSON.stringify({ text }),
-      }),
-    },
+      receive_id,
+      msg_type: "text",
+      content: JSON.stringify({ text }),
+    }
   );
 
   if (!response.ok) {
