@@ -1,27 +1,21 @@
-import { send, postWithAuthOptions } from "../../utils.ts";
-export default async function sendMessage(
+import { postWithAuthOptions } from "../helper.ts";
+import { errorHandler } from "../helper.ts";
+export async function sendTextMessage(
   token: string,
-  receive_id: string,
-  text: string
+  body: {
+    receiver: string;
+    text: string;
+  },
 ) {
   const response = await postWithAuthOptions(
     "/im/v1/messages?receive_id_type=chat_id",
     token,
     {
-      receive_id,
+      receive_id: body.receiver,
       msg_type: "text",
-      content: JSON.stringify({ text }),
-    }
+      content: JSON.stringify({ text: body.text }),
+    },
   );
 
-  if (!response.ok) {
-    return send();
-  }
-
-  const body = await response.json();
-
-  if (body.code !== 0) {
-    console.log("send message error, code = %d, msg = %s", body.code, body.msg);
-    return "";
-  }
+  errorHandler(response);
 }

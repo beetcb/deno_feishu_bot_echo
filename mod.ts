@@ -1,6 +1,6 @@
 import { isMessageReceive, isVerification, send } from "./utils.ts";
+import { sendTextMessage } from "./api/message/sendMessage.ts";
 import getTenantAccessToken from "./api/auth.ts";
-import sendMessage from "./api/message/sendMessage.ts";
 
 const APP_ID = Deno.env.get("APP_ID");
 const APP_SECRET = Deno.env.get("APP_SECRET");
@@ -65,7 +65,10 @@ async function handleRequest(request: Request) {
       });
     }
 
-    await sendMessage(accessToken, body.event.message.chat_id, text);
+    await sendTextMessage(accessToken, {
+      receiver: body.event.message.chat_id,
+      text,
+    });
     return send();
   }
 
