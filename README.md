@@ -22,7 +22,7 @@
 
 1. 点击下面按钮，进入 Deno Deploy
 
-   [![](./assets/deno-deploy-button.svg)](https://dash.deno.com/new?url=https://raw.githubusercontent.com/justjavac/deno_feishu_bot_echo/main/mod.ts&env=APP_ID,APP_SECRET,APP_VERIFICATION_TOKEN)
+   [![](./assets/deno-deploy-button.svg)](https://dash.deno.com/new?url=https://github.com/beetcb/deno_feishu_bot_echo/raw/main/mod.ts&env=APP_ID,APP_SECRET,APP_VERIFICATION_TOKEN)
 
 1. 输入 `APP_ID`、`APP_SECRET`、`APP_VERIFICATION_TOKEN` 值。
 
