@@ -68,7 +68,7 @@ async function handleRequest(request: Request) {
     await sendTextMessage(accessToken, {
       receiver: body.event.message.chat_id,
       text: await tweeAddRecord(accessToken, {
-        filds: {
+        fields: {
           推文任务描述: "test",
           落实组别: "信息化办公室",
           预计截止日期: new Date().getTime() + 1000 * 60 * 60 * 6,
