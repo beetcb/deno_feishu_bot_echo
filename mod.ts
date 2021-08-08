@@ -1,4 +1,6 @@
-import { isMessageReceive, isVerification } from "./utils.ts";
+import { isMessageReceive, isVerification, send } from "./utils.ts";
+import getTenantAccessToken from "./api/auth.ts";
+import sendMessage from "./api/message/sendMessage.ts";
 
 const APP_ID = Deno.env.get("APP_ID");
 const APP_SECRET = Deno.env.get("APP_SECRET");
@@ -40,8 +42,8 @@ async function handleRequest(request: Request) {
     // 在群聊中，只有被 at 了才回复
     if (
       body.event.message.chat_type === "group" &&
-      !body.event.message.mentions?.some((x) =>
-        x.id.union_id === "on_6df0c53dd9cc99bd05fdc799709e186e"
+      !body.event.message.mentions?.some(
+        (x) => x.id.union_id === "on_6df0c53dd9cc99bd05fdc799709e186e",
       )
     ) {
       return send();
@@ -63,81 +65,11 @@ async function handleRequest(request: Request) {
       });
     }
 
-    await sendMessage(
-      accessToken,
-      body.event.message.chat_id,
-      text,
-    );
+    await sendMessage(accessToken, body.event.message.chat_id, text);
     return send();
   }
 
   return send();
-}
-
-async function getTenantAccessToken() {
-  const response = await fetch(
-    "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal/",
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        app_id: APP_ID,
-        app_secret: APP_SECRET,
-      }),
-    },
-  );
-
-  if (!response.ok) {
-    return send();
-  }
-
-  const body = await response.json();
-
-  if (body.code !== 0) {
-    console.log("get tenant_access_token error, code = %d", body.code);
-    return "";
-  }
-
-  return body.tenant_access_token ?? "";
-}
-
-async function sendMessage(token: string, receive_id: string, text: string) {
-  const response = await fetch(
-    "https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id",
-    {
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        Authorization: "Bearer " + token,
-      },
-      method: "POST",
-      body: JSON.stringify({
-        receive_id,
-        msg_type: "text",
-        content: JSON.stringify({ text }),
-      }),
-    },
-  );
-
-  if (!response.ok) {
-    return send();
-  }
-
-  const body = await response.json();
-
-  if (body.code !== 0) {
-    console.log("send message error, code = %d, msg = %s", body.code, body.msg);
-    return "";
-  }
-}
-
-function send(body = {}) {
-  return new Response(JSON.stringify(body), {
-    headers: {
-      "content-type": "application/json; charset=UTF-8",
-    },
-  });
 }
 
 addEventListener("fetch", (event: FetchEvent) => {
