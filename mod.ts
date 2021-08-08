@@ -15,7 +15,7 @@ async function handleRequest(request: Request) {
         {
           status: 200,
           headers: { "content-type": "text/plain" },
-        },
+        }
       );
     }
 
@@ -39,12 +39,10 @@ async function handleRequest(request: Request) {
       return send();
     }
 
-    // 在群聊中，只有被 at 了才回复
+    // 在群聊中，只有被@了才回复
     if (
       body.event.message.chat_type === "group" &&
-      !body.event.message.mentions?.some(
-        (x) => x.id.union_id === "on_6df0c53dd9cc99bd05fdc799709e186e",
-      )
+      !body.event.message.mentions?.length
     ) {
       return send();
     }
