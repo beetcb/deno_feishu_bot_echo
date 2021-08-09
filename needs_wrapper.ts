@@ -6,7 +6,7 @@ export function tweeAddRecord(
   token: string,
   body: {
     recordId?: string;
-    filds: TweeFilds;
+    fields: TweeFilds;
   }
 ) {
   return addOneRecord(

@@ -8,16 +8,16 @@ export async function addOneRecord(
   },
   body: {
     recordId?: string;
-    filds: any;
+    fields: any;
   }
 ): Promise<string> {
-  const { recordId, filds } = body;
+  const { recordId, fields } = body;
   const res = await postWithAuthOptions(
     `/bitable/v1/apps/${where.appToken}/tables/${where.tableId}/records`,
     token,
     {
       record_id: recordId,
-      filds: filds,
+      fields: fields,
     }
   );
 
