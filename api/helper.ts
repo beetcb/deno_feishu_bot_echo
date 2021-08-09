@@ -2,9 +2,8 @@ const API_ORIGIN = "https://open.feishu.cn/open-apis";
 
 export async function errorHandler(res: Response) {
   const body = await res.json();
-  console.log(body);
   if (body.code !== 0) {
-    console.log("send message error, code = %d, msg = %s", body.code, body.msg);
+    console.log("API request error, code = %d, msg = %s", body.code, body.msg);
     return "Error";
   }
   return body.msg;
@@ -22,7 +21,7 @@ export function getWithAuthOptions(apiEndpointPath: string, token: string) {
 export function postWithAuthOptions(
   apiEndpointPath: string,
   token: string,
-  body: any = {},
+  body: any = {}
 ) {
   return fetch(`${API_ORIGIN}${apiEndpointPath}`, {
     headers: {

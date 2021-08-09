@@ -49,6 +49,11 @@ async function handleRequest(request: Request) {
       return send();
     }
 
+    // 单聊中，不回复自己发送的消息
+    if (body.event.sender.sender_id.user_id === "cli_a18574266ef8d00c") {
+      return send();
+    }
+
     const accessToken = await getTenantAccessToken();
     if (accessToken === "") {
       console.warn(`verification token not match, token = %s`, accessToken);
