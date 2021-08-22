@@ -1,19 +1,19 @@
 import { isMessageReceive, isVerification, send } from "./utils.ts";
 import { sendTextMessage } from "./api/message/sendMessage.ts";
 import getTenantAccessToken from "./api/auth.ts";
-import { addOneRecord } from "./api/bitable/addRecords.ts";
 import { tweeAddRecord } from "./needs_wrapper.ts";
 
 const APP_ID = Deno.env.get("APP_ID");
 const APP_SECRET = Deno.env.get("APP_SECRET");
 const APP_VERIFICATION_TOKEN = Deno.env.get("APP_VERIFICATION_TOKEN");
+const WORKER_URL = Deno.env.get("WORKER_URL");
 
 async function handleRequest(request: Request) {
   // 只接收 POST 请求
   if (request.method.toUpperCase() !== "POST") {
-    if (!APP_ID || !APP_SECRET || !APP_VERIFICATION_TOKEN) {
+    if (!APP_ID || !APP_SECRET || !APP_VERIFICATION_TOKEN || !WORKER_URL) {
       return new Response(
-        "请先设置 APP_ID、APP_SECRET、APP_VERIFICATION_TOKEN 环境变量",
+        "请先设置 APP_ID、APP_SECRET、APP_VERIFICATION_TOKEN、WORKER_URL 环境变量",
         {
           status: 200,
           headers: { "content-type": "text/plain" },
@@ -35,6 +35,24 @@ async function handleRequest(request: Request) {
     return send({ challenge: body.challenge });
   }
 
+  if (body.isForwarded) {
+    console.log(body)
+    await msgHandler(body);
+  } else {
+    console.warn(body);
+    body.isForwarded = true;
+    await fetch(WORKER_URL!, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+  }
+  return send();
+}
+
+async function msgHandler(body: any) {
   if (isMessageReceive(body)) {
     // 此处只处理 text 类型消息，其他类型消息忽略
     if (body.event.message.message_type !== "text") {
@@ -49,11 +67,6 @@ async function handleRequest(request: Request) {
       return send();
     }
 
-    // 单聊中，不回复自己发送的消息
-    if (body.event.sender.sender_id.user_id === "cli_a18574266ef8d00c") {
-      return send();
-    }
-
     const accessToken = await getTenantAccessToken();
     if (accessToken === "") {
       console.warn(`verification token not match, token = %s`, accessToken);
@@ -61,7 +74,6 @@ async function handleRequest(request: Request) {
     }
     const mentions = body.event.message.mentions;
     let { text } = JSON.parse(body.event.message.content);
-    console.log(body.event)
 
     if (mentions != null) {
       text = text.replace(/@_user_\d/g, (key: string) => {
@@ -87,6 +99,6 @@ async function handleRequest(request: Request) {
   return send();
 }
 
-addEventListener("fetch", (event: FetchEvent) => {
+addEventListener("fetch", (event: any) => {
   event.respondWith(handleRequest(event.request));
 });
